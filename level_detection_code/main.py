@@ -20,7 +20,7 @@ plt.hist(bottle_gray.ravel(), 256,[0, 256]); plt.show()
 
 # manual threshold
 (T, bottle_threshold) = cv2.threshold(bottle_gray, 45, 255, cv2.THRESH_BINARY_INV)
-cv2.imshow("Bottle Gray Threshold 27.5", bottle_threshold)
+cv2.imshow("Bottle Gray Threshold", bottle_threshold)
 cv2.waitKey(0)
 
 # apply opening operation
