@@ -1,21 +1,107 @@
+# -------- Libraries--------------
 import cv2
 from matplotlib import pyplot as plt
 import imutils
 import numpy as np
+from datetime import datetime
+
+def data_logging(state):
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    with open("Data_Logging.txt", "a") as f:
+        f.write(f"Level detected is {state},Time: {dt_string}\n")
+
+def capture():
+    import cv2
+
+    webcam = 1  # 1 - for external webcam
+    cam = cv2.VideoCapture(webcam)
+    img_counter = 0
+
+    if cam.isOpened():
+        while True:
+            ret, frame = cam.read()
+            if not ret:
+                print("failed to grab frame")
+                break
+            cv2.imshow("Level_Detection", frame)
+
+            # k = cv2.waitKey(1)
+            # if k % 256 == 27:
+            #     # ESC pressed
+            #     print("Escape hit, closing...")
+            #     break
+            # elif k % 256 == 32:
+            #     # SPACE pressed
+            #     image_name = "opencv_frame_{}.png".format(img_counter)
+            #     image_file = "Original_Images/" + image_name
+            #     cv2.imwrite(image_file, frame)
+            #     print("{} written!".format(image_name))
+            #     img_counter += 1
+
+            cv2.waitKey(2000)
+            if img_counter < 1:
+                image_name = "img{}.png".format(img_counter)
+                image_file = "Original_Images/" + image_name
+                cv2.imwrite(image_file, frame)
+                print("{} written!".format(image_name))
+                img_counter += 1
+            else:
+                break
+
+        cam.release()
+        cv2.destroyAllWindows()
+        return "Connected", image_file
+    else:
+        print("Alert ! Camera disconnected")
+        return "Disconnected", "Empty"
+
+# Some work to be done
 
 
-img=cv2.imread("opencv_frame_15.png")
-img=cv2.resize(img,(600,800))
-grid_RGB=cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+status, image_file = capture()
+print(status)
+print(image_file)
+
+# ---------
+
+# Load the image and Resize it
+img_path = "Original_Images/"
+img_file = "opencv_frame_15.png"
+img_name = img_path + img_file
+img = cv2.imread(img_name)
+dimension = img.shape
+# width = int(dimension[1]/2)
+# height = int(dimension[0]/2)
+# img = cv2.resize(img, (width, height))
+
+# Shape of the image
+print("Shape of the image", dimension)
+
+r1, r2 = 260, 770
+c1, c2 = 265, 640
+
+# [rows, columns]
+img = img[r1:r2, c1:c2]
+
+cv2.imshow('Cropped_Image', img)
+cv2.imwrite("Cropped_Images/" + img_name, img)
+cv2.waitKey(0)
+
+# Convert the image color from BGR to RGB
+grid_RGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 # plt.figure(figsize=(7,5))
 # plt.title("img")
 # plt.imshow(grid_RGB)
 
-grid_HSV=cv2.cvtColor(grid_RGB,cv2.COLOR_RGB2HSV)
+# Convert the image color from RGB to HSV
+grid_HSV = cv2.cvtColor(grid_RGB,cv2.COLOR_RGB2HSV)
 
+# Set the color range to be detected
 lower=np.array([0,150,50])
 upper=np.array([20,255,255])
 
+# Masking the image
 mask= cv2.inRange(grid_HSV,lower ,upper)
 # plt.figure(figsize=(7,5))
 # plt.imshow(mask)
@@ -36,10 +122,10 @@ invert = cv2.bitwise_not(blackAndWhiteImage)
 # cv2.imshow('Inverted image', invert)
 # cv2.waitKey(0)
 
-##===============================================
+# ===============================================
+
 # read image and take first channel only
 bottle_3_channel = invert
-bottle_3_channel=cv2.resize(bottle_3_channel,(600,800))
 bottle_gray = cv2.split(bottle_3_channel)[0]
 # cv2.imshow("Bottle Gray", bottle_gray)
 # cv2.waitKey(0)
@@ -94,30 +180,39 @@ print(1/aspectRatio)
 if aspectRatio > 0.9:
     cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (255, 0, 0), 2)
     cv2.putText(bottle_clone, "Over filled, cf={value:.3f}".format(value=1/aspectRatio,), (x + 10, y + 20), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
-
+    state = "Over_filled"
+    data_logging(state)
 elif 0.8 < aspectRatio < 0.9:
     cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-    cv2.putText(bottle_clone, "80% filled, cf={value:.3f}".format(value=1 / aspectRatio, ), (x + 10, y + 20),cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 2)
-    # data_logging()
+    cv2.putText(bottle_clone, "80% filled, cf={value:.3f}".format(value=1 / aspectRatio, ), (x + 10, y + 20),cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+    state = "80%_filled"
+    data_logging(state)
 elif 0.8 < aspectRatio < 0.9:
     cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-    cv2.putText(bottle_clone, "Perfect, cf={value:.3f}".format(value=1 / aspectRatio, ), (x + 10, y + 20),cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
-    # data_logging(data_1)
+    cv2.putText(bottle_clone, "Perfect, cf={value:.3f}".format(value=1 / aspectRatio, ), (x + 10, y + 20),cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
+    state = "Perfect_filled"
+    data_logging(state)
 elif 0.7 < aspectRatio < 0.8:
     cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-    cv2.putText(bottle_clone, "70% filled, cf={value:.3f}".format(value=1 / aspectRatio, ), (x + 10, y + 20),cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
-    # data_logging(data_1)
+    cv2.putText(bottle_clone, "70% filled, cf={value:.3f}".format(value=1 / aspectRatio, ), (x + 10, y + 20),cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
+    state = "70%_filled"
+    data_logging(state)
 elif 0.6 < aspectRatio < 0.7:
     cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-    cv2.putText(bottle_clone, "60% filled, cf={value:.3f}".format(value=1 / aspectRatio, ), (x + 10, y + 20),cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
-    # data_logging(data_1)
+    cv2.putText(bottle_clone, "60% filled, cf={value:.3f}".format(value=1 / aspectRatio, ), (x + 10, y + 20),cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
+    state = "60%_filled"
+    data_logging(state)
 else:
     cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 0, 0), 2)
-    cv2.putText(bottle_clone, "Under filled,{value:.3f}".format(value=1/aspectRatio), (x + 10, y + 20), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0), 2)
-    # data_logging(data_1)
+    cv2.putText(bottle_clone, "Under filled,{value:.3f}".format(value=1/aspectRatio), (x + 10, y + 20), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+    cv2.imwrite("Detected_Images/Under_filled/" + img_name, bottle_clone)
+    state = "Under_filled"
+    data_logging(state)
+
 cv2.imshow("Decision", bottle_clone)
+cv2.imwrite(f"Detected_Images/{state}/" + img_file, bottle_clone)
+state = ""
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-# def data_logging(data_1):
-#     with open("Data_Logging.txt", "a") as f:
-#         f.write(f"Jar detected is {data_1},Time: {dt_string}\n")
+
+
