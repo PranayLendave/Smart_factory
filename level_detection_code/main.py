@@ -71,7 +71,7 @@ def capture():
             return "Disconnected", "Empty", "Empty"
 
     except KeyboardInterrupt:
-        # print("KeyboardInterrupt")
+        print("KeyboardInterrupt")
         pass
 
 
@@ -202,47 +202,50 @@ while True:
             bottle_clone = img
             (x, y, w, h) = cv2.boundingRect(contours[-1])
             aspectRatio = w / float(h)
-            print(1 / aspectRatio)
+            aspectRatio = 1/aspectRatio
+            print(aspectRatio)
             state = ""
             if aspectRatio > 0.9:
                 cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                cv2.putText(bottle_clone, "Over filled, cf={value:.3f}".format(value=1 / aspectRatio, ),
+                cv2.putText(bottle_clone, "Over filled, cf={value:.3f}".format(value=aspectRatio, ),
                             (x + 10, y + 20),
                             cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
                 state = "Over_filled"
+                sort = 1
                 data_logging(state)
-            elif 0.8 < aspectRatio < 0.9:
+            elif 0.85 < aspectRatio < 0.9:
                 cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(bottle_clone, "80% filled, cf={value:.3f}".format(value=1 / aspectRatio, ),
+                cv2.putText(bottle_clone, "80% filled, cf={value:.3f}".format(value=aspectRatio, ),
                             (x + 10, y + 20),
                             cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
                 state = "80%_filled"
                 data_logging(state)
-            elif 0.8 < aspectRatio < 0.9:
+            elif 0.8 < aspectRatio < 0.85:
                 cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(bottle_clone, "Perfect, cf={value:.3f}".format(value=1 / aspectRatio, ), (x + 10, y + 20),
+                cv2.putText(bottle_clone, "Perfect, cf={value:.3f}".format(value=aspectRatio, ), (x + 10, y + 20),
                             cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
                 state = "Perfect_filled"
                 data_logging(state)
-            elif 0.7 < aspectRatio < 0.8:
+            elif 0.75 < aspectRatio < 0.8:
                 cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(bottle_clone, "70% filled, cf={value:.3f}".format(value=1 / aspectRatio, ),
+                cv2.putText(bottle_clone, "70% filled, cf={value:.3f}".format(value=aspectRatio, ),
                             (x + 10, y + 20),
                             cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
                 state = "70%_filled"
                 data_logging(state)
-            elif 0.6 < aspectRatio < 0.7:
+            elif 0.7 < aspectRatio < 0.75:
                 cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(bottle_clone, "60% filled, cf={value:.3f}".format(value=1 / aspectRatio, ),
+                cv2.putText(bottle_clone, "60% filled, cf={value:.3f}".format(value=aspectRatio, ),
                             (x + 10, y + 20),
                             cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
                 state = "60%_filled"
                 data_logging(state)
             else:
                 cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 0, 0), 2)
-                cv2.putText(bottle_clone, "Under filled,{value:.3f}".format(value=1 / aspectRatio), (x + 10, y + 20),
+                cv2.putText(bottle_clone, "Under filled,{value:.3f}".format(value=aspectRatio), (x + 10, y + 20),
                             cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
                 state = "Under_filled"
+                sort = 1
                 data_logging(state)
 
             cv2.imshow("Decision", bottle_clone)
@@ -260,9 +263,8 @@ while True:
                 print("Sort the jar")
                 sort = 0
 
-
     except KeyboardInterrupt:
-        # print("KeyboardInterrupt")
+        print("KeyboardInterrupt")
         pass
 
 
