@@ -89,6 +89,10 @@ while True:
             # print(image__name)
             img_name = image__name
             img_file = image__file
+<<<<<<< Updated upstream
+=======
+            # ---------
+>>>>>>> Stashed changes
 
             # ---------
             # ====================
@@ -96,8 +100,11 @@ while True:
             # img_path = "Original_Images/"
             # img_name = "opencv_frame_15.png"
             # img_file = img_path + img_name
+<<<<<<< Updated upstream
             #====================
 
+=======
+>>>>>>> Stashed changes
             img = cv2.imread(img_file)
             dimension = img.shape
             # width = int(dimension[1]/2)
@@ -253,6 +260,7 @@ while True:
             cv2.waitKey(1000)
             cv2.destroyAllWindows()
 
+<<<<<<< Updated upstream
         if sort == 1:
             if first_state == 1:
                 Previous_seconds1 = int(round(time.time()))
@@ -262,6 +270,8 @@ while True:
                 Previous_seconds = Current_seconds
                 print("Sort the jar")
                 sort = 0
+=======
+>>>>>>> Stashed changes
 
     except KeyboardInterrupt:
         print("KeyboardInterrupt")
