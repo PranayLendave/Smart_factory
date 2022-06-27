@@ -11,10 +11,6 @@ dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
 Current_seconds = 0
 Previous_seconds = 0
-Current_seconds1 = 0
-Previous_seconds1 = int(round(time.time()))
-sort = 0
-first_state = 1
 
 
 def data_logging(state_):
@@ -55,7 +51,7 @@ def capture():
 
                 cv2.waitKey(2000)
                 if img_counter < 1:
-                    image_name = "img_{}.png".format(int(round(time.time())))
+                    image_name = "img_{}.png".format(float("{:.2f}".format(time.time())))
                     image_file = "Original_Images/" + image_name
                     cv2.imwrite(image_file, frame)
                     print("{} written!".format(image_name))
@@ -77,7 +73,7 @@ def capture():
 
 while True:
     try:
-        Current_seconds = int(round(time.time()))
+        Current_seconds = float("{:.2f}".format(time.time()))
         if Current_seconds - Previous_seconds > 20:
             print("Entered the loop: .............")
             Previous_seconds = Current_seconds
@@ -207,7 +203,6 @@ while True:
                             (x + 10, y + 20),
                             cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
                 state = "Over_filled"
-                sort = 1
                 data_logging(state)
             elif 0.8 < aspectRatio < 0.9:
                 cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -247,16 +242,6 @@ while True:
             cv2.imwrite(f"Detected_Images/{state}/" + "Detected_" + img_name, bottle_clone)
             cv2.waitKey(1000)
             cv2.destroyAllWindows()
-
-        if sort == 1:
-            if first_state == 1:
-                Previous_seconds1 = int(round(time.time()))
-            first_state = 0
-            Current_seconds1 = int(round(time.time()))
-            if Current_seconds1 - Previous_seconds1 > 5:
-                Previous_seconds = Current_seconds
-                print("Sort the jar")
-                sort = 0
 
     except KeyboardInterrupt:
         # print("KeyboardInterrupt")
