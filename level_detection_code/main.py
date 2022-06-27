@@ -11,6 +11,10 @@ dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
 Current_seconds = 0
 Previous_seconds = 0
+Current_seconds1 = 0
+Previous_seconds1 = int(round(time.time()))
+sort = 0
+first_state = 1
 
 
 def data_logging(state_):
@@ -24,7 +28,7 @@ def data_logging(state_):
 def capture():
     try:
         global now
-        webcam = 0  # 1 - for external webcam
+        webcam = 1  # 1 - for external webcam
         cam = cv2.VideoCapture(webcam)
         img_counter = 0
 
@@ -83,14 +87,17 @@ while True:
             # print(status)
             # print(image__file)
             # print(image__name)
-            # img_name = image__name
-            # img_file = image__file
-            # ---------
+            img_name = image__name
+            img_file = image__file
 
+            # ---------
+            # ====================
             # Load the image and Resize it
-            img_path = "Original_Images/"
-            img_name = "opencv_frame_15.png"
-            img_file = img_path + img_name
+            # img_path = "Original_Images/"
+            # img_name = "opencv_frame_15.png"
+            # img_file = img_path + img_name
+            #====================
+
             img = cv2.imread(img_file)
             dimension = img.shape
             # width = int(dimension[1]/2)
@@ -100,8 +107,8 @@ while True:
             # Shape of the image
             print("Shape of the image", dimension)
 
-            r1, r2 = 260, 770
-            c1, c2 = 265, 640
+            r1, r2 = 0, 430
+            c1, c2 = 140, 490
 
             # [rows, columns]
             img = img[r1:r2, c1:c2]
@@ -243,6 +250,19 @@ while True:
             cv2.waitKey(1000)
             cv2.destroyAllWindows()
 
+        if sort == 1:
+            if first_state == 1:
+                Previous_seconds1 = int(round(time.time()))
+            first_state = 0
+            Current_seconds1 = int(round(time.time()))
+            if Current_seconds1 - Previous_seconds1 > 5:
+                Previous_seconds = Current_seconds
+                print("Sort the jar")
+                sort = 0
+
+
     except KeyboardInterrupt:
         # print("KeyboardInterrupt")
         pass
+
+
