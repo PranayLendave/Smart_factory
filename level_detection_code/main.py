@@ -11,6 +11,10 @@ dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
 Current_seconds = 0
 Previous_seconds = 0
+Current_seconds1 = 0
+Previous_seconds1 = int(round(time.time()))
+sort = 0
+first_state = 1
 
 
 def data_logging(state_):
@@ -203,6 +207,7 @@ while True:
                             (x + 10, y + 20),
                             cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
                 state = "Over_filled"
+                sort = 1
                 data_logging(state)
             elif 0.8 < aspectRatio < 0.9:
                 cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -242,6 +247,16 @@ while True:
             cv2.imwrite(f"Detected_Images/{state}/" + "Detected_" + img_name, bottle_clone)
             cv2.waitKey(1000)
             cv2.destroyAllWindows()
+
+        if sort == 1:
+            if first_state == 1:
+                Previous_seconds1 = int(round(time.time()))
+            first_state = 0
+            Current_seconds1 = int(round(time.time()))
+            if Current_seconds1 - Previous_seconds1 > 5:
+                Previous_seconds = Current_seconds
+                print("Sort the jar")
+                sort = 0
 
     except KeyboardInterrupt:
         # print("KeyboardInterrupt")
