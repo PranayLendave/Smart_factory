@@ -210,6 +210,7 @@ while True:
                             (x + 10, y + 20),
                             cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
                 state = "Over_filled"
+                sort = 0
                 data_logging(state)
             elif 0.8 < aspectRatio < 0.9:
                 cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
