@@ -7,7 +7,6 @@ from datetime import datetime
 import time
 import os
 
-
 now = datetime.now()
 dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 Current_seconds = 0
@@ -16,17 +15,17 @@ Current_seconds1 = 0
 Previous_seconds1 = int(round(time.time()))
 sort = 0
 first_state = 1
-img='0'
-contours_1='0'
-bottle_clone='0'
-img_name='0'
-img_file='0'
+img = '0'
+contours_1 = '0'
+bottle_clone = '0'
+img_name = '0'
+img_file = '0'
 
 
 def creating_files():
     # =========Creating directories=============
     path = os.getcwd()
-    path_1 = path+'/Original_Images'
+    path_1 = path + '/Original_Images'
     isFile = os.path.isdir(path_1)
     print(isFile)
     if not isFile:
@@ -34,26 +33,27 @@ def creating_files():
         os.mkdir(path_1)
         print('Original_Images is missing [Created!!]')
 
-    path_1 = path+'/Cropped_Images'
+    path_1 = path + '/Cropped_Images'
     isFile = os.path.isdir(path_1)
     if not isFile:
         path_1 = path + '/Cropped_Images'
         os.mkdir(path_1)
         print('Cropped_Images is missing [Created!!]')
 
-    path_1 = path+'/Detected_Images'
+    path_1 = path + '/Detected_Images'
     isFile = os.path.isdir(path_1)
     if not isFile:
         path_1 = path + '/Detected_Images'
         os.mkdir(path_1)
-        path_2 = path_1+"/Under_filled"
+        path_2 = path_1 + "/Under_filled"
         os.mkdir(path_2)
-        path_2 = path_1+"/Over_filled"
+        path_2 = path_1 + "/Over_filled"
         os.mkdir(path_2)
         path_2 = path_1 + "/Perfect_filled"
         os.mkdir(path_2)
         print('Detected_Images is missing [Created!!]')
     # =========Creating directories=============
+
 
 def data_logging(state_):
     global now
@@ -66,7 +66,9 @@ def data_logging(state_):
 def capture():
     try:
         global now
-        webcam = 0  # 1 - for external webcam
+        image_name1 = "0"
+        image_file1 = "0"
+        webcam = 1  # 1 - for external webcam
         cam = cv2.VideoCapture(webcam, cv2.CAP_DSHOW)
         img_counter = 0
 
@@ -93,17 +95,17 @@ def capture():
 
                 cv2.waitKey(2000)
                 if img_counter < 1:
-                    image_name = "img_{}.png".format(float("{:.2f}".format(time.time())))
-                    image_file = "Original_Images/" + image_name
-                    cv2.imwrite(image_file, frame)
-                    print("{} written!".format(image_name))
+                    image_name1 = "img_{}.png".format(float("{:.2f}".format(time.time())))
+                    image_file1 = "Original_Images/" + image_name1
+                    cv2.imwrite(image_file1, frame)
+                    print("{} written!".format(image_name1))
                     img_counter += 1
                 else:
                     break
 
             cam.release()
             cv2.destroyAllWindows()
-            return "Connected", image_file, image_name
+            return "Connected", image_file1, image_name1
         else:
             print("Alert ! Camera disconnected")
             return "Disconnected", "Empty", "Empty"
@@ -117,22 +119,23 @@ def level_detection_code():
     global bottle_clone
     global img_file
     global img_name
+    global img
     status, image__file, image__name = capture()
 
     # print(status)
     # print(image__file)
     # print(image__name)
-    # global img_name
-    # img_name = image__name
-    # global img_file
-    # img_file = image__file
+    global img_name
+    img_name = image__name
+    global img_file
+    img_file = image__file
 
     # ---------
     # ====================
     # Load the image and Resize it
-    img_path = "Original_Images/"
-    img_name = "opencv_frame_15.png"
-    img_file = img_path + img_name
+    # img_path = "Original_Images/"
+    # img_name = "opencv_frame_15.png"
+    # img_file = img_path + img_name
     # ====================
 
     img = cv2.imread(img_file)
@@ -149,11 +152,14 @@ def level_detection_code():
 
     # [rows, columns]
     img = img[r1:r2, c1:c2]
-
+    # cv2.imshow("IMG in level_detecion",img)
     cv2.imshow('Cropped_Image', img)
     cv2.imwrite("Cropped_Images/" + "Cropped_" + img_name, img)
     cv2.waitKey(1000)
     cv2.destroyAllWindows()
+
+    #================================================
+
     # Convert the image color from BGR to RGB
     grid_RGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     # plt.figure(figsize=(7,5))
@@ -164,8 +170,8 @@ def level_detection_code():
     grid_HSV = cv2.cvtColor(grid_RGB, cv2.COLOR_RGB2HSV)
 
     # Set the color range to be detected
-    lower = np.array([0, 150, 50])
-    upper = np.array([20, 255, 255])
+    lower = np.array([0, 100, 50])
+    upper = np.array([30, 255, 255])
 
     # Masking the image
     mask = cv2.inRange(grid_HSV, lower, upper)
@@ -193,18 +199,18 @@ def level_detection_code():
     # read image and take first channel only
     bottle_3_channel = invert
     bottle_gray = cv2.split(bottle_3_channel)[0]
+    # bottle_gray=img
     # cv2.imshow("Bottle Gray", bottle_gray)
     # cv2.waitKey(0)
 
     # blur image
-    bottle_gray = cv2.GaussianBlur(bottle_gray, (7, 7), 0)
+    # bottle_gray = cv2.GaussianBlur(bottle_gray, (7, 7), 0)
     # cv2.imshow("Bottle Gray Smoothed 7 x 7", bottle_gray)
     # cv2.waitKey(0)
 
     # draw histogram
     y, x, _ = plt.hist(bottle_gray.ravel(), 256, [0, 256])
-    # print(x[np.where(y==)])
-    # print(y.max())
+
     # plt.show()
 
     # manual threshold
@@ -222,8 +228,9 @@ def level_detection_code():
     contours = cv2.findContours(bottle_open.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours = imutils.grab_contours(contours)
     bottle_clone = bottle_3_channel.copy()
-    cv2.drawContours(bottle_clone, contours, -1, (255, 0, 0), 2)
-    # cv2.imshow("All Contours", bottle_clone)
+    img_1=img
+    cv2.drawContours(img_1, contours, -1, (255, 0, 0), 2)
+    # cv2.imshow("All Contours", img_1)
     # cv2.waitKey(0)
 
     # sort contours by area
@@ -232,11 +239,13 @@ def level_detection_code():
     # print(areas)
     (contours, areas) = zip(*sorted(zip(contours, areas), key=lambda a: a[1]))
     global contours_1
-    contours_1 =contours
+    contours_1 = contours
     # print contour with largest area
     bottle_clone = bottle_3_channel.copy()
-    cv2.drawContours(bottle_clone, [contours[-1]], -1, (255, 0, 0), 2)
-    # cv2.imshow("Largest contour", bottle_clone)
+    img_2=img
+    # cv2.imshow("img for largest contrours", img)
+    cv2.drawContours(img_2, [contours[-1]], -1, (255, 0, 0), 2)
+    # cv2.imshow("Largest contour", img_2)
     # cv2.waitKey(0)
 
     # draw bounding box, calculate aspect and display decision
@@ -245,14 +254,16 @@ def level_detection_code():
     (x, y, w, h) = cv2.boundingRect(contours[-1])
     aspectRatio = w / float(h)
     aspectRatio = 1 / aspectRatio
+    aspectRatio=round(aspectRatio, 3)
     print(aspectRatio)
     return aspectRatio
 
-
 def decision_block():
-    sort= 0
+    sort = 0
     state = ""
-    # bottle_clone = img
+    bottle_clone = img
+
+    # cv2.imshow("img in decision block",img)
     (x, y, w, h) = cv2.boundingRect(contours_1[-1])
     if aspectRatio > 0.9:
         cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (255, 0, 0), 2)
@@ -260,41 +271,22 @@ def decision_block():
                     (x + 10, y + 20),
                     cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
         state = "Over_filled"
+        print("Overfilled queatity: ",aspectRatio- 0.92)
         sort = 1
         data_logging(state)
-    elif 0.85 < aspectRatio < 0.9:
-        cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.putText(bottle_clone, "80% filled, cf={value:.3f}".format(value=aspectRatio, ),
-                    (x + 10, y + 20),
-                    cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
-        state = "80%_filled"
-        data_logging(state)
-    elif 0.8 < aspectRatio < 0.85:
+    elif 0.77 < aspectRatio < 0.92:
         cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
         cv2.putText(bottle_clone, "Perfect, cf={value:.3f}".format(value=aspectRatio, ), (x + 10, y + 20),
                     cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
         state = "Perfect_filled"
         data_logging(state)
-    elif 0.75 < aspectRatio < 0.8:
-        cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.putText(bottle_clone, "70% filled, cf={value:.3f}".format(value=aspectRatio, ),
-                    (x + 10, y + 20),
-                    cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
-        state = "70%_filled"
-        data_logging(state)
-    elif 0.7 < aspectRatio < 0.75:
-        cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.putText(bottle_clone, "60% filled, cf={value:.3f}".format(value=aspectRatio, ),
-                    (x + 10, y + 20),
-                    cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
-        state = "60%_filled"
-        sort = 1
-        data_logging(state)
-    else:
+
+    elif aspectRatio < 0.77:
         cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 0, 0), 2)
         cv2.putText(bottle_clone, "Under filled,{value:.3f}".format(value=aspectRatio), (x + 10, y + 20),
                     cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
         state = "Under_filled"
+        print("Underfilled queatity: ", 0.77 - aspectRatio)
         sort = 1
         data_logging(state)
 
@@ -310,13 +302,13 @@ if __name__ == '__main__':
     while True:
         try:
             Current_seconds = float("{:.2f}".format(time.time()))
-            if Current_seconds - Previous_seconds > 20:
+            if Current_seconds - Previous_seconds > 10:
                 print("Entered the loop: .............")
                 Previous_seconds = Current_seconds
                 # print(Previous_seconds)
                 # Some work to be done
 
-                aspectRatio = level_detection_code()   # getting aspectRatio value from the function
+                aspectRatio = level_detection_code()  # getting aspectRatio value from the function
 
                 sort = decision_block()
 
@@ -331,9 +323,7 @@ if __name__ == '__main__':
                     sort = 0
 
         except KeyboardInterrupt:
-            print("[Closed!]KeyboardInterrupt occured")
+            print("[Closed!]KeyboardInterrupt occurred")
             exit()
         except ValueError:
             print("No bottle detected")
-
-
