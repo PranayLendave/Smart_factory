@@ -17,13 +17,12 @@ sort = 0
 first_state = 1
 img = '0'
 contours_1 = '0'
-bottle_clone = '0'
+jar_clone = '0'
 img_name = '0'
 img_file = '0'
 
 
 def creating_files():
-    # =========Creating directories=============
     path = os.getcwd()
     path_1 = path + '/Original_Images'
     isFile = os.path.isdir(path_1)
@@ -52,7 +51,6 @@ def creating_files():
         path_2 = path_1 + "/Perfect_filled"
         os.mkdir(path_2)
         print('Detected_Images is missing [Created!!]')
-    # =========Creating directories=============
 
 
 def data_logging(state_):
@@ -68,7 +66,7 @@ def capture():
         global now
         image_name1 = "0"
         image_file1 = "0"
-        webcam = 1  # 1 - for external webcam
+        webcam = 0  # 1 - for external webcam
         cam = cv2.VideoCapture(webcam, cv2.CAP_DSHOW)
         img_counter = 0
 
@@ -116,65 +114,52 @@ def capture():
 
 
 def level_detection_code():
-    global bottle_clone
+    global jar_clone
     global img_file
     global img_name
     global img
-    status, image__file, image__name = capture()
 
-    # print(status)
-    # print(image__file)
-    # print(image__name)
-    global img_name
+    status, image__file, image__name = capture()
     img_name = image__name
-    global img_file
     img_file = image__file
 
-    # ---------
     # ====================
-    # Load the image and Resize it
-    # img_path = "Original_Images/"
+    # img_path = "Original_Images/"  # Load the image and Resize it
     # img_name = "opencv_frame_15.png"
     # img_file = img_path + img_name
     # ====================
 
+    # ==========Cropping image===========
     img = cv2.imread(img_file)
     dimension = img.shape
     # width = int(dimension[1]/2)
     # height = int(dimension[0]/2)
     # img = cv2.resize(img, (width, height))
 
-    # Shape of the image
-    print("Shape of the image", dimension)
-
+    print("Shape of the image", dimension)  # Shape of the image
     r1, r2 = 0, 430
     c1, c2 = 140, 490
-
     # [rows, columns]
     img = img[r1:r2, c1:c2]
     # cv2.imshow("IMG in level_detecion",img)
-    cv2.imshow('Cropped_Image', img)
+    # cv2.imshow('Cropped_Image', img)
     cv2.imwrite("Cropped_Images/" + "Cropped_" + img_name, img)
-    cv2.waitKey(1000)
+    # cv2.waitKey(1000)
     cv2.destroyAllWindows()
+    # ===========================================
 
-    #================================================
-
-    # Convert the image color from BGR to RGB
-    grid_RGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # ============= Colour detection ==============
+    grid_RGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Convert the image color from BGR to RGB
     # plt.figure(figsize=(7,5))
     # plt.title("img")
     # plt.imshow(grid_RGB)
 
-    # Convert the image color from RGB to HSV
-    grid_HSV = cv2.cvtColor(grid_RGB, cv2.COLOR_RGB2HSV)
+    grid_HSV = cv2.cvtColor(grid_RGB, cv2.COLOR_RGB2HSV)  # Convert the image color from RGB to HSV
 
-    # Set the color range to be detected
-    lower = np.array([0, 100, 50])
-    upper = np.array([30, 255, 255])
+    lower = np.array([0, 100, 50])  # Set the color range to be detected
+    upper = np.array([20, 255, 255])
 
-    # Masking the image
-    mask = cv2.inRange(grid_HSV, lower, upper)
+    mask = cv2.inRange(grid_HSV, lower, upper)  # Masking the image
     # plt.figure(figsize=(7,5))
     # plt.imshow(mask)
 
@@ -190,47 +175,41 @@ def level_detection_code():
 
     # cv2.imshow('Black white image', blackAndWhiteImage)
     # cv2.waitKey(0)
-    invert = cv2.bitwise_not(blackAndWhiteImage)
-    # cv2.imshow('Inverted image', invert)
+    inverted_image = cv2.bitwise_not(blackAndWhiteImage)
+    # cv2.imshow('inverted_imageed image', inverted_image)
     # cv2.waitKey(0)
-
     # ===============================================
 
     # read image and take first channel only
-    bottle_3_channel = invert
-    bottle_gray = cv2.split(bottle_3_channel)[0]
-    # bottle_gray=img
-    # cv2.imshow("Bottle Gray", bottle_gray)
-    # cv2.waitKey(0)
-
-    # blur image
-    # bottle_gray = cv2.GaussianBlur(bottle_gray, (7, 7), 0)
-    # cv2.imshow("Bottle Gray Smoothed 7 x 7", bottle_gray)
-    # cv2.waitKey(0)
+    jar_channel = inverted_image.copy()
 
     # draw histogram
-    y, x, _ = plt.hist(bottle_gray.ravel(), 256, [0, 256])
+    y, x, _ = plt.hist(jar_channel.ravel(), 256, [0, 256])
 
-    # plt.show()
+    plt.show()
 
     # manual threshold
-    (T, bottle_threshold) = cv2.threshold(bottle_gray, 50, 255, cv2.THRESH_BINARY_INV)
-    # cv2.imshow("Bottle Gray Threshold", bottle_threshold)
+    (T, jar_threshold) = cv2.threshold(jar_channel, 50, 255, cv2.THRESH_BINARY_INV)
+    # cv2.imshow("Bottle Gray Threshold", jar_threshold)
     # cv2.waitKey(0)
 
     # apply opening operation
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-    bottle_open = cv2.morphologyEx(bottle_threshold, cv2.MORPH_OPEN, kernel)
-    # cv2.imshow("Bottle Open 5 x 5", bottle_open)
+    jar_open = cv2.morphologyEx(jar_threshold, cv2.MORPH_OPEN, kernel)
+    # cv2.imshow("Bottle Open 5 x 5", jar_open)
     # cv2.waitKey(0)
 
     # find all contours
-    contours = cv2.findContours(bottle_open.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = cv2.findContours(jar_open.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours = imutils.grab_contours(contours)
-    bottle_clone = bottle_3_channel.copy()
-    img_1=img
+    jar_clone = jar_channel.copy()
+    img_1 = img.copy()
+    # print(type(img))
+    # cv2.imshow("img", img)
+    # cv2.waitKey(0)
     cv2.drawContours(img_1, contours, -1, (255, 0, 0), 2)
     # cv2.imshow("All Contours", img_1)
+    # cv2.imshow("img", img)
     # cv2.waitKey(0)
 
     # sort contours by area
@@ -241,8 +220,8 @@ def level_detection_code():
     global contours_1
     contours_1 = contours
     # print contour with largest area
-    bottle_clone = bottle_3_channel.copy()
-    img_2=img
+    jar_clone = jar_channel.copy()
+    img_2 = img.copy()
     # cv2.imshow("img for largest contrours", img)
     cv2.drawContours(img_2, [contours[-1]], -1, (255, 0, 0), 2)
     # cv2.imshow("Largest contour", img_2)
@@ -250,49 +229,50 @@ def level_detection_code():
 
     # draw bounding box, calculate aspect and display decision
 
-    bottle_clone = img
+    jar_clone = img.copy()
     (x, y, w, h) = cv2.boundingRect(contours[-1])
     aspectRatio = w / float(h)
     aspectRatio = 1 / aspectRatio
-    aspectRatio=round(aspectRatio, 3)
+    aspectRatio = round(aspectRatio, 3)
     print(aspectRatio)
     return aspectRatio
+
 
 def decision_block():
     sort = 0
     state = ""
-    bottle_clone = img
+    jar_clone = img.copy()
 
     # cv2.imshow("img in decision block",img)
     (x, y, w, h) = cv2.boundingRect(contours_1[-1])
     if aspectRatio > 0.9:
-        cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        cv2.putText(bottle_clone, "Over filled, cf={value:.3f}".format(value=aspectRatio, ),
+        cv2.rectangle(jar_clone, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        cv2.putText(jar_clone, "Over filled, cf={value:.3f}".format(value=aspectRatio, ),
                     (x + 10, y + 20),
                     cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 2)
         state = "Over_filled"
-        print("Overfilled queatity: ",aspectRatio- 0.92)
+        print("Overfilled queatity: ", aspectRatio - 0.92)
         sort = 1
         data_logging(state)
     elif 0.77 < aspectRatio < 0.92:
-        cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.putText(bottle_clone, "Perfect, cf={value:.3f}".format(value=aspectRatio, ), (x + 10, y + 20),
+        cv2.rectangle(jar_clone, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.putText(jar_clone, "Perfect, cf={value:.3f}".format(value=aspectRatio, ), (x + 10, y + 20),
                     cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
         state = "Perfect_filled"
         data_logging(state)
 
     elif aspectRatio < 0.77:
-        cv2.rectangle(bottle_clone, (x, y), (x + w, y + h), (0, 0, 0), 2)
-        cv2.putText(bottle_clone, "Under filled,{value:.3f}".format(value=aspectRatio), (x + 10, y + 20),
+        cv2.rectangle(jar_clone, (x, y), (x + w, y + h), (0, 0, 0), 2)
+        cv2.putText(jar_clone, "Under filled,{value:.3f}".format(value=aspectRatio), (x + 10, y + 20),
                     cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
         state = "Under_filled"
         print("Underfilled queatity: ", 0.77 - aspectRatio)
         sort = 1
         data_logging(state)
 
-    cv2.imshow("Decision", bottle_clone)
-    cv2.imwrite(f"Detected_Images/{state}/" + "Detected_" + img_name, bottle_clone)
-    cv2.waitKey(1000)
+    cv2.imshow("Decision", jar_clone)
+    cv2.imwrite(f"Detected_Images/{state}/" + "Detected_" + img_name, jar_clone)
+    cv2.waitKey(0)
     cv2.destroyAllWindows()
     return sort
 
@@ -305,12 +285,8 @@ if __name__ == '__main__':
             if Current_seconds - Previous_seconds > 10:
                 print("Entered the loop: .............")
                 Previous_seconds = Current_seconds
-                # print(Previous_seconds)
-                # Some work to be done
-
                 aspectRatio = level_detection_code()  # getting aspectRatio value from the function
-
-                sort = decision_block()
+                sort = decision_block()  # getting decision for sorting from the decision block
 
             if sort == 1:
                 if first_state == 1:
