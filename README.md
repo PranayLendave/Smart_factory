@@ -34,7 +34,7 @@ To run this project, the following prerequisites are required:
 ## Usage
 
 1. Run the Python code on the main computer to initiate the honey jar detection system.
-2. The file `main.c` contains the main program running the project. 
+2. The file `main.py` contains the main program running the project. 
 3. Ensure the ESP32-CAM is streaming the camera feed to the main computer via RTSP.
 4. Monitor the detected conditions of the honey jars on the main computer.
 5. If any anomaly is detected, the Python code will send messages to the second ESP32 microcontroller.
