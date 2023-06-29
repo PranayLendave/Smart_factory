@@ -43,8 +43,8 @@ To run this project, the following prerequisites are required:
 ## Contributing
 
 Major contributors:
-- Pranay Lendave
-- Viral Faria 
+- [Viral Faria](https://github.com/viralfaria)
+- [Pranay Lendave](https://github.com/PranayLendave)
 
 Contributions to this project are welcome. If you encounter any issues or have suggestions for improvements, please submit bug reports or feature requests through the issue tracker.
 
