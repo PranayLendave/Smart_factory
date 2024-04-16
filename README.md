@@ -4,7 +4,8 @@
 This project implements a smart conveyor belt system that utilizes YOLOv5 object detection and ESP32 microcontrollers for detecting the conditions of honey jars and sorting them accordingly. The entire system is designed to operate wirelessly, with each device connected to a local Wi-Fi network.
 
 Setup for our project:
-![Setup for our project](assets/image2.jpeg)
+![Setup for our project](assets/image2.png)
+
 The project involves three main components: a main computer (laptop), an ESP32 microcontroller for camera feed, and another ESP32 microcontroller for sorting actions. The main computer is responsible for honey jar detection using YOLOv5 as the object detection model. Image processing techniques are applied to detect the liquid level inside each jar. The first ESP32 (ESP32-CAM) captures the camera feed, which is then streamed in real-time using the Real-Time Streaming Protocol (RTSP) to the main computer for object detection. The detected liquid level determines the appropriate action to be taken on each jar. Additionally, the condition of the cap and label are also monitored, triggering respective actions for defective jars.
 
 The second ESP32 microcontroller is responsible for sorting the jars based on their conditions. Socket programming is employed for communication between the Python code running on the main computer and the second ESP32 microcontroller over the local Wi-Fi network. Messages are sent from the Python code to the second ESP32 whenever an anomaly is detected in a honey jar. The second ESP32 microcontroller then takes the necessary action on the respective jar using a pneumatic sorting mechanism.
