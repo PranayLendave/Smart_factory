@@ -1,58 +1,81 @@
 # Smart Conveyor Belt for Honey Jar Detection and Sorting
 
+This project presents a smart conveyor belt system designed for honey jar detection and sorting. The system leverages YOLOv5 for object detection and ESP32 microcontrollers for real-time monitoring and sorting, with all devices connected wirelessly via a local Wi-Fi network.
 
-This project implements a smart conveyor belt system that utilizes YOLOv5 object detection and ESP32 microcontrollers for detecting the conditions of honey jars and sorting them accordingly. The entire system is designed to operate wirelessly, with each device connected to a local Wi-Fi network.
+## System Overview
 
-Setup for our project:
+### Components
+The system comprises three primary components:
+1. **Main Computer (Laptop/Raspberry Pi):** Handles honey jar detection using YOLOv5 and processes the camera feed for image analysis.
+2. **ESP32-CAM Microcontroller:** Captures real-time video of the conveyor belt and streams it to the main computer via RTSP.
+3. **ESP32 Sorting Microcontroller:** Receives sorting commands from the main computer and activates a pneumatic mechanism to handle defective jars.
 
+### Detection Logic
+The main computer processes the camera feed to identify:
+- **Liquid level inside jars** using image processing techniques.
+- **Cap condition** and **label integrity** of jars.
+
+When anomalies are detected, the sorting microcontroller receives commands over the local Wi-Fi network to execute appropriate actions.
+
+### Setup Diagram
 ![Setup for our project](assets/image2.png)
 
-Level detection logic:
-![Setup for our project](assets/image3.png)
+### Level Detection Logic
+![Level detection logic](assets/image3.png)
 
-The project involves three main components: a main computer (laptop), an ESP32 microcontroller for camera feed, and another ESP32 microcontroller for sorting actions. The main computer is responsible for honey jar detection using YOLOv5 as the object detection model. Image processing techniques are applied to detect the liquid level inside each jar. The first ESP32 (ESP32-CAM) captures the camera feed, which is then streamed in real-time using the Real-Time Streaming Protocol (RTSP) to the main computer for object detection. The detected liquid level determines the appropriate action to be taken on each jar. Additionally, the condition of the cap and label are also monitored, triggering respective actions for defective jars.
+## Key Features
 
-The second ESP32 microcontroller is responsible for sorting the jars based on their conditions. Socket programming is employed for communication between the Python code running on the main computer and the second ESP32 microcontroller over the local Wi-Fi network. Messages are sent from the Python code to the second ESP32 whenever an anomaly is detected in a honey jar. The second ESP32 microcontroller then takes the necessary action on the respective jar using a pneumatic sorting mechanism.
-
-## Features
-
-- Real-time detection of honey jar conditions using YOLOv5 object detection.
-- Image processing for liquid level detection inside the jars.
-- Monitoring and action-taking based on cap and label conditions.
-- ESP32-CAM for capturing and streaming camera feed to the main computer.
-- Wireless communication between devices via a local Wi-Fi network.
-- Socket programming for communication between Python code and the second ESP32 microcontroller.
-- Pneumatic system for sorting the jars based on their conditions.
+- **Real-time detection** of jar conditions using YOLOv5.
+- **Liquid level monitoring** inside jars.
+- **Cap and label defect detection** with corresponding sorting actions.
+- **Wireless video streaming** from the ESP32-CAM to the main computer.
+- **Socket-based communication** between the main computer and the sorting ESP32.
+- **Pneumatic sorting mechanism** for handling defective jars.
 
 ## Prerequisites
 
-To run this project, the following prerequisites are required:
+Ensure the following are available before running the project:
 
-- Main computer (laptop) with the necessary software and libraries for running the Python code.
-- ESP32 microcontrollers (ESP32-CAM and the second ESP32) with the required firmware and software.
-- Wi-Fi network for connecting all devices.
+- A main computer (laptop) with Python installed.
+- Two ESP32 microcontrollers:
+  - **ESP32-CAM** for video capture.
+  - **Second ESP32** for sorting control.
+- A stable local Wi-Fi network for communication.
+- Required Python libraries (specified in `requirements.txt`).
 
 ## Installation
 
-1. Clone the repository: `https://github.com/PranayLendave/industry4.0-with-yolov5-and-esp32.git`
-2. Install the necessary dependencies and libraries as specified in the `requirements.txt` file.
-3. Configure the ESP32-CAM and the second ESP32 microcontroller according to the provided instructions.
-4. Set up the Wi-Fi network and ensure all devices are connected to it.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/PranayLendave/industry4.0-with-yolov5-and-esp32.git
+   ```
+2. Install the necessary Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Configure the ESP32-CAM for RTSP streaming.
+4. Set up the second ESP32 with the provided firmware for sorting actions.
+5. Connect all devices to the same Wi-Fi network.
 
 ## Usage
 
-1. Run the Python code on the main computer to initiate the honey jar detection system.
-2. The file `main.py` contains the main program running the project. 
-3. Ensure the ESP32-CAM is streaming the camera feed to the main computer via RTSP.
-4. Monitor the detected conditions of the honey jars on the main computer.
-5. If any anomaly is detected, the Python code will send messages to the second ESP32 microcontroller.
-6. The second ESP32 microcontroller will perform the necessary sorting action using the pneumatic system.
+1. Start the Python program on the main computer by running `main.py`.
+    ```bash
+   python main.py
+   ```
+3. Ensure the ESP32-CAM is streaming video to the main computer via RTSP.
+4. Monitor the real-time detection output on the main computer.
+5. Upon detecting any anomalies, the main computer sends sorting commands to the second ESP32.
+6. The second ESP32 activates the pneumatic sorting mechanism to separate defective jars.
 
-## Contributing
+## Contributors
 
 Major contributors:
 - [Viral Faria](https://github.com/viralfaria)
 - [Pranay Lendave](https://github.com/PranayLendave)
 
-Contributions to this project are welcome. If you encounter any issues or have suggestions for improvements, please submit bug reports or feature requests through the issue tracker.
+Contributions are welcome! If you encounter any issues or have suggestions for improvements, feel free to submit a bug report or feature request via the issue tracker.
+
+---
+This project is a step towards Industry 4.0 automation by integrating advanced object detection and IoT-enabled control systems for smart manufacturing.
 
