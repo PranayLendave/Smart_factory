@@ -6,6 +6,8 @@ This project implements a smart conveyor belt system that utilizes YOLOv5 object
 Setup for our project:
 
 ![Setup for our project](assets/image2.png)
+Level detection logic
+![Setup for our project](assets/image3.png)
 
 The project involves three main components: a main computer (laptop), an ESP32 microcontroller for camera feed, and another ESP32 microcontroller for sorting actions. The main computer is responsible for honey jar detection using YOLOv5 as the object detection model. Image processing techniques are applied to detect the liquid level inside each jar. The first ESP32 (ESP32-CAM) captures the camera feed, which is then streamed in real-time using the Real-Time Streaming Protocol (RTSP) to the main computer for object detection. The detected liquid level determines the appropriate action to be taken on each jar. Additionally, the condition of the cap and label are also monitored, triggering respective actions for defective jars.
 
